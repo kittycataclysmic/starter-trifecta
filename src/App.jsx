@@ -289,7 +289,8 @@ function Tool1({ onBack }) {
                 const sel = selected === opt;
                 return (
                   <button key={i} onClick={() => setSelected(opt)} style={{ display: "flex", alignItems: "flex-start", gap: 16, padding: "18px 22px", border: `1.5px solid ${sel ? "#0a0a0a" : "#e0e0e0"}`, background: sel ? "#0a0a0a" : "#fff", cursor: "pointer", textAlign: "left", width: "100%", transition: "all 0.15s" }}>
-                    <div style={{ flexShrink: 0, width: 24, height: 24, border: `1.5px solid ${sel ? "#fff" : "#ccc"}`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Mono', monospace", fontSize: 10, color: sel ? "#0a0a0a" : "#ccc", background: sel ? "#fff" : "transparent", marginTop: 1 }}>{sel ? "✓" : MARKERS[i]}</div>
+                    {/* ── RADIO CIRCLE (was square — borderRadius: "50%" added) ── */}
+                    <div style={{ flexShrink: 0, width: 24, height: 24, borderRadius: "50%", border: `1.5px solid ${sel ? "#fff" : "#ccc"}`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Mono', monospace", fontSize: 10, color: sel ? "#0a0a0a" : "#ccc", background: sel ? "#fff" : "transparent", marginTop: 1 }}>{sel ? "✓" : MARKERS[i]}</div>
                     <span style={{ fontFamily: "'Libre Baskerville', serif", fontSize: 14, lineHeight: 1.6, color: sel ? "#fff" : "#333" }}>{opt.text}</span>
                   </button>
                 );
