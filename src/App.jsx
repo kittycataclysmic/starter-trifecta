@@ -1,36 +1,174 @@
 import { useState } from "react";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// GLOBAL STYLES
-// ─────────────────────────────────────────────────────────────────────────────
 const GLOBAL_CSS = `
   @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Mono:wght@400;500&display=swap');
+
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: #fff; }
-  .app { font-family: 'Libre Baskerville', Georgia, serif; background: #fff; color: #0a0a0a; min-height: 100vh; display: flex; flex-direction: column; }
-  .hdr { border-bottom: 2px solid #0a0a0a; padding: 14px 40px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: #fff; z-index: 200; }
+
+  :root {
+    --deep: #0F0D0B;
+    --ink: #1A1714;
+    --fog: #EDE9E3;
+    --ash: #D9D4CE;
+    --steel: #6B7280;
+    --text-on-dark: #E8E4DF;
+    --text-muted: #A09C96;
+    --rule: rgba(237,233,227,0.12);
+  }
+
+  body {
+    background: var(--deep);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .app {
+    font-family: 'Libre Baskerville', Georgia, serif;
+    background: var(--deep);
+    color: var(--text-on-dark);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+  }
+
+  .hdr {
+    border-bottom: 1px solid var(--rule);
+    padding: 18px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    background: rgba(15,13,11,0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 200;
+  }
+
   .hdr-left { display: flex; align-items: center; gap: 20px; }
-  .back-btn { background: none; border: none; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: #888; cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 0; transition: color 0.2s; }
-  .back-btn:hover { color: #0a0a0a; }
-  .brand { font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; letter-spacing: 3px; text-transform: uppercase; color: #0a0a0a; }
-  .tag { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: #aaa; }
-  .prog { height: 3px; background: #ebebeb; }
-  .prog-fill { height: 100%; background: #0a0a0a; transition: width 0.5s ease; }
-  .mm-main { flex: 1; display: flex; flex-direction: column; }
-  .ftr { background: #0a0a0a; padding: 16px 40px; display: flex; justify-content: space-between; align-items: center; }
-  .ftr-l { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 2.5px; text-transform: uppercase; color: #fff; }
-  .ftr-r { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 2.5px; text-transform: uppercase; color: #555; }
-  .btn-primary { display: inline-flex; align-items: center; gap: 10px; background: #0a0a0a; color: #fff; font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; letter-spacing: 2.5px; text-transform: uppercase; padding: 16px 32px; border: none; cursor: pointer; transition: background 0.2s; }
-  .btn-primary:hover { background: #333; }
-  .btn-primary:disabled { opacity: 0.35; cursor: default; }
-  .btn-outline { display: inline-flex; align-items: center; gap: 10px; background: transparent; color: #0a0a0a; font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; letter-spacing: 2.5px; text-transform: uppercase; padding: 15px 31px; border: 1.5px solid #0a0a0a; cursor: pointer; transition: all 0.2s; }
-  .btn-outline:hover { background: #0a0a0a; color: #fff; }
-  .mm-input { border: 1.5px solid #0a0a0a; padding: 14px 18px; font-family: 'Libre Baskerville', serif; font-size: 14px; color: #0a0a0a; background: #fff; outline: none; width: 100%; }
-  .mm-input::placeholder { color: #bbb; }
-  .mm-input:focus { box-shadow: 3px 3px 0 #0a0a0a; }
-  @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+
+  .back-btn {
+    background: none;
+    border: none;
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--steel);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0;
+    transition: color 0.2s;
+  }
+  .back-btn:hover { color: var(--fog); }
+
+  .brand {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--fog);
+  }
+
+  .tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--steel);
+  }
+
+  .prog { height: 2px; background: var(--rule); }
+  .prog-fill { height: 100%; background: var(--fog); transition: width 0.5s ease; }
+
+  .mm-main { flex: 1; display: flex; flex-direction: column; position: relative; z-index: 1; }
+
+  .ftr {
+    background: var(--ink);
+    border-top: 1px solid var(--rule);
+    padding: 16px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+  }
+  .ftr-l { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--fog); }
+  .ftr-r { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--steel); }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--fog);
+    color: var(--deep);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    padding: 16px 32px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-primary:hover { background: var(--ash); }
+  .btn-primary:disabled { opacity: 0.3; cursor: default; }
+
+  .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: transparent;
+    color: var(--fog);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    padding: 15px 31px;
+    border: 1px solid rgba(237,233,227,0.25);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-outline:hover { background: var(--fog); color: var(--deep); border-color: var(--fog); }
+
+  .mm-input {
+    border: 1px solid rgba(237,233,227,0.2);
+    padding: 14px 18px;
+    font-family: 'Libre Baskerville', serif;
+    font-size: 14px;
+    color: var(--fog);
+    background: rgba(237,233,227,0.04);
+    outline: none;
+    width: 100%;
+    transition: border-color 0.2s;
+  }
+  .mm-input::placeholder { color: var(--steel); }
+  .mm-input:focus { border-color: rgba(237,233,227,0.4); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
   .fade-up { animation: fadeUp 0.4s ease forwards; }
-  @media (max-width: 640px) { .hdr { padding: 12px 20px; } .ftr { padding: 14px 20px; } }
+
+  @media (max-width: 640px) {
+    .hdr { padding: 12px 20px; }
+    .ftr { padding: 14px 20px; }
+  }
 `;
 
 // ─── QUIZ DATA ───────────────────────────────────────────────────────────────
@@ -155,46 +293,59 @@ const LAUNCH_COMPONENTS = [
 const MARKERS = ["A", "B", "C", "D"];
 const KILLER_NAMES = { E: "Empty Pitch", N: "No-Proof Trap", W: "Wrong Room" };
 
+// ─── SHARED STYLE TOKENS ─────────────────────────────────────────────────────
+const C = {
+  label:    { fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: "#6B7280", display: "block", marginBottom: 20 },
+  heading:  { fontFamily: "'Bebas Neue', sans-serif", lineHeight: 0.92, color: "#EDE9E3", letterSpacing: 1, marginBottom: 28 },
+  rule:     { width: 40, height: 2, background: "rgba(237,233,227,0.2)", marginBottom: 28 },
+  body:     { fontSize: 15, lineHeight: 1.85, color: "#A09C96", marginBottom: 36 },
+  divider:  { height: 1, background: "rgba(237,233,227,0.08)", marginBottom: 32 },
+};
+
 // ─────────────────────────────────────────────────────────────────────────────
 // HUB
 // ─────────────────────────────────────────────────────────────────────────────
 function Hub({ onSelect }) {
   const tools = [
     { id: "m1", num: "01", type: "Diagnostic Quiz · 5 min", title: "Application Killer Audit", desc: "Find out exactly why your applications are being ignored — and get your personalized fix. 10 honest questions. One clear answer." },
-    { id: "m2", num: "02", type: "Guide · 20 min read", title: "The First Client Blueprint", desc: "Three specific shifts that turn an invisible applicant into a VA that clients actually reply to — with AI prompts for each shift." },
+    { id: "m2", num: "02", type: "Guide · 20 min read",     title: "The First Client Blueprint", desc: "Three specific shifts that turn an invisible applicant into a VA that clients actually reply to — with AI prompts for each shift." },
     { id: "m3", num: "03", type: "Interactive Builder · 45–60 min", title: "VA Launch Kit Builder", desc: "Build your pitch, portfolio, profile, and outreach tracker in one sitting. Leave with everything you need to send your first applications today." },
   ];
 
   return (
     <div style={{ maxWidth: 800, margin: "0 auto", padding: "60px 40px 80px" }} className="fade-up">
-      <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: "#aaa", display: "block", marginBottom: 20 }}>
-        Margin &amp; Momentum™ · For Beginners &amp; Career Shifters
-      </span>
-      <h1 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(52px, 9vw, 88px)", lineHeight: 0.9, color: "#0a0a0a", marginBottom: 28, letterSpacing: 1 }}>
-        YOUR STARTER<br /><span style={{ WebkitTextStroke: "2px #0a0a0a", color: "transparent" }}>TRIFECTA</span>
+      <span style={C.label}>Margin &amp; Momentum™ · Starter Trifecta · For Beginners &amp; Career Shifters</span>
+      <h1 style={{ ...C.heading, fontSize: "clamp(52px, 9vw, 88px)" }}>
+        YOUR STARTER<br />
+        <span style={{ WebkitTextStroke: "1.5px #EDE9E3", color: "transparent" }}>TRIFECTA</span>
       </h1>
-      <div style={{ width: 48, height: 3, background: "#0a0a0a", marginBottom: 28 }} />
-      <p style={{ fontSize: 15, lineHeight: 1.85, color: "#444", marginBottom: 56, maxWidth: 560 }}>
+      <div style={C.rule} />
+      <p style={{ ...C.body, maxWidth: 560 }}>
         You've been applying. You've been trying. The silence is not a reflection of your worth — it's a signal that something in your approach needs to change. These three tools find what that is and fix it.
       </p>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
         {tools.map((t, i) => (
-          <button key={t.id} onClick={() => onSelect(t.id)} style={{
-            display: "grid", gridTemplateColumns: "64px 1fr auto", alignItems: "center", gap: 24,
-            padding: "28px 32px", border: "1.5px solid #0a0a0a",
-            background: i === 0 ? "#0a0a0a" : "#fff", cursor: "pointer", textAlign: "left", transition: "all 0.2s",
-          }}
-            onMouseEnter={e => { if (i !== 0) e.currentTarget.style.background = "#f5f5f5"; }}
-            onMouseLeave={e => { if (i !== 0) e.currentTarget.style.background = "#fff"; }}
+          <button
+            key={t.id}
+            onClick={() => onSelect(t.id)}
+            style={{
+              display: "grid", gridTemplateColumns: "64px 1fr auto", alignItems: "center", gap: 24,
+              padding: "28px 32px",
+              border: `1px solid ${i === 0 ? "#EDE9E3" : "rgba(237,233,227,0.12)"}`,
+              background: i === 0 ? "#EDE9E3" : "rgba(237,233,227,0.02)",
+              cursor: "pointer", textAlign: "left", transition: "all 0.2s",
+            }}
+            onMouseEnter={e => { if (i !== 0) e.currentTarget.style.background = "rgba(237,233,227,0.06)"; }}
+            onMouseLeave={e => { if (i !== 0) e.currentTarget.style.background = "rgba(237,233,227,0.02)"; }}
           >
-            <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 40, color: i === 0 ? "#fff" : "#0a0a0a", lineHeight: 1 }}>{t.num}</span>
+            <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 40, color: i === 0 ? "#0F0D0B" : "#EDE9E3", lineHeight: 1 }}>{t.num}</span>
             <div>
-              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", color: i === 0 ? "#888" : "#aaa", display: "block", marginBottom: 6 }}>{t.type}</span>
-              <span style={{ fontFamily: "'Libre Baskerville', serif", fontSize: 16, fontWeight: 700, color: i === 0 ? "#fff" : "#0a0a0a", display: "block", marginBottom: 6 }}>{t.title}</span>
-              <span style={{ fontFamily: "'Libre Baskerville', serif", fontSize: 13, lineHeight: 1.6, color: i === 0 ? "#aaa" : "#666" }}>{t.desc}</span>
+              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", color: i === 0 ? "#6B7280" : "#6B7280", display: "block", marginBottom: 6 }}>{t.type}</span>
+              <span style={{ fontFamily: "'Libre Baskerville', serif", fontSize: 16, fontWeight: 700, color: i === 0 ? "#0F0D0B" : "#EDE9E3", display: "block", marginBottom: 6 }}>{t.title}</span>
+              <span style={{ fontFamily: "'Libre Baskerville', serif", fontSize: 13, lineHeight: 1.6, color: i === 0 ? "#4A4A4A" : "#A09C96" }}>{t.desc}</span>
             </div>
-            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 18, color: i === 0 ? "#fff" : "#0a0a0a" }}>→</span>
+            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 18, color: i === 0 ? "#0F0D0B" : "#EDE9E3" }}>→</span>
           </button>
         ))}
       </div>
@@ -248,30 +399,29 @@ function Tool1({ onBack }) {
   };
 
   const maxScore = scores ? Math.max(...Object.values(scores)) || 1 : 1;
-  const S = {
-    wrap: { maxWidth: 680, margin: "0 auto", padding: "56px 40px 80px" },
-    ey: { fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: "#aaa", display: "block", marginBottom: 20 },
-    bt: { fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(44px, 8vw, 76px)", lineHeight: 0.92, color: "#0a0a0a", letterSpacing: 1, marginBottom: 28 },
-    dv: { width: 40, height: 3, background: "#0a0a0a", marginBottom: 28 },
-    bd: { fontSize: 14.5, lineHeight: 1.85, color: "#333", marginBottom: 36 },
-  };
 
   return (
     <div>
-      <div style={{ height: 3, background: "#ebebeb" }}><div style={{ height: "100%", background: "#0a0a0a", width: `${progress}%`, transition: "width 0.5s ease" }} /></div>
-      <div style={S.wrap} className="fade-up">
+      <div style={{ height: 2, background: "rgba(237,233,227,0.08)" }}>
+        <div style={{ height: "100%", background: "#EDE9E3", width: `${progress}%`, transition: "width 0.5s ease" }} />
+      </div>
+      <div style={{ maxWidth: 680, margin: "0 auto", padding: "56px 40px 80px" }} className="fade-up">
 
         {stage === "intro" && (
           <>
-            <span style={S.ey}>Diagnostic Audit · Beginners &amp; Career Shifters</span>
-            <h2 style={S.bt}>APPLICATION<br /><span style={{ WebkitTextStroke: "2px #0a0a0a", color: "transparent" }}>KILLER</span><br />AUDIT</h2>
-            <div style={S.dv} />
-            <p style={S.bd}>You've been applying. The replies aren't coming — and you're starting to wonder if something is wrong with you. Nothing is wrong with you. Something is wrong with your approach. This audit finds out exactly what that is.</p>
-            <div style={{ display: "flex", gap: 32, marginBottom: 48, paddingBottom: 40, borderBottom: "1px solid #e8e8e8" }}>
+            <span style={C.label}>Diagnostic Audit · Beginners &amp; Career Shifters</span>
+            <h2 style={{ ...C.heading, fontSize: "clamp(44px, 8vw, 76px)" }}>
+              APPLICATION<br />
+              <span style={{ WebkitTextStroke: "1.5px #EDE9E3", color: "transparent" }}>KILLER</span><br />
+              AUDIT
+            </h2>
+            <div style={C.rule} />
+            <p style={C.body}>You've been applying. The replies aren't coming — and you're starting to wonder if something is wrong with you. Nothing is wrong with you. Something is wrong with your approach. This audit finds out exactly what that is.</p>
+            <div style={{ display: "flex", gap: 40, marginBottom: 48, paddingBottom: 40, borderBottom: "1px solid rgba(237,233,227,0.08)" }}>
               {[["10", "Questions"], ["5", "Minutes"], ["1", "Real answer"]].map(([n, l]) => (
-                <div key={l} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                  <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 36, color: "#0a0a0a", lineHeight: 1 }}>{n}</span>
-                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", color: "#aaa" }}>{l}</span>
+                <div key={l} style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                  <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 40, color: "#EDE9E3", lineHeight: 1 }}>{n}</span>
+                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", color: "#6B7280" }}>{l}</span>
                 </div>
               ))}
             </div>
@@ -281,17 +431,28 @@ function Tool1({ onBack }) {
 
         {stage === "quiz" && currentQ && (
           <div key={qIndex} className="fade-up">
-            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: "#aaa", display: "block", marginBottom: 10 }}>{currentQ.section}</span>
-            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: 2, color: "#ccc", display: "block", marginBottom: 28 }}>Question {qIndex + 1} of {QUESTIONS.length}</span>
-            <h3 style={{ fontFamily: "'Libre Baskerville', serif", fontSize: "clamp(18px, 3vw, 26px)", fontWeight: 700, lineHeight: 1.35, color: "#0a0a0a", marginBottom: 36 }}>{currentQ.question}</h3>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 44 }}>
+            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: "#6B7280", display: "block", marginBottom: 8 }}>{currentQ.section}</span>
+            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: 2, color: "rgba(237,233,227,0.2)", display: "block", marginBottom: 28 }}>Question {qIndex + 1} of {QUESTIONS.length}</span>
+            <h3 style={{ fontFamily: "'Libre Baskerville', serif", fontSize: "clamp(18px, 3vw, 24px)", fontWeight: 700, lineHeight: 1.4, color: "#EDE9E3", marginBottom: 36 }}>{currentQ.question}</h3>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 44 }}>
               {currentQ.options.map((opt, i) => {
                 const sel = selected === opt;
                 return (
-                  <button key={i} onClick={() => setSelected(opt)} style={{ display: "flex", alignItems: "flex-start", gap: 16, padding: "18px 22px", border: `1.5px solid ${sel ? "#0a0a0a" : "#e0e0e0"}`, background: sel ? "#0a0a0a" : "#fff", cursor: "pointer", textAlign: "left", width: "100%", transition: "all 0.15s" }}>
-                    {/* ── RADIO CIRCLE (was square — borderRadius: "50%" added) ── */}
-                    <div style={{ flexShrink: 0, width: 24, height: 24, borderRadius: "50%", border: `1.5px solid ${sel ? "#fff" : "#ccc"}`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Mono', monospace", fontSize: 10, color: sel ? "#0a0a0a" : "#ccc", background: sel ? "#fff" : "transparent", marginTop: 1 }}>{sel ? "✓" : MARKERS[i]}</div>
-                    <span style={{ fontFamily: "'Libre Baskerville', serif", fontSize: 14, lineHeight: 1.6, color: sel ? "#fff" : "#333" }}>{opt.text}</span>
+                  <button key={i} onClick={() => setSelected(opt)} style={{
+                    display: "flex", alignItems: "flex-start", gap: 16, padding: "18px 22px",
+                    border: `1px solid ${sel ? "#EDE9E3" : "rgba(237,233,227,0.12)"}`,
+                    background: sel ? "#EDE9E3" : "rgba(237,233,227,0.02)",
+                    cursor: "pointer", textAlign: "left", width: "100%", transition: "all 0.15s",
+                  }}>
+                    <div style={{
+                      flexShrink: 0, width: 24, height: 24, borderRadius: "50%",
+                      border: `1.5px solid ${sel ? "#0F0D0B" : "rgba(237,233,227,0.25)"}`,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontFamily: "'DM Mono', monospace", fontSize: 10,
+                      color: sel ? "#EDE9E3" : "rgba(237,233,227,0.3)",
+                      background: sel ? "#0F0D0B" : "transparent", marginTop: 1,
+                    }}>{sel ? "✓" : MARKERS[i]}</div>
+                    <span style={{ fontFamily: "'Libre Baskerville', serif", fontSize: 14, lineHeight: 1.65, color: sel ? "#0F0D0B" : "#A09C96" }}>{opt.text}</span>
                   </button>
                 );
               })}
@@ -304,47 +465,52 @@ function Tool1({ onBack }) {
 
         {stage === "gate" && (
           <div className="fade-up">
-            <span style={S.ey}>Audit Complete · Your Result Is Ready</span>
-            <h2 style={{ ...S.bt, marginBottom: 24 }}>WE FOUND<br />YOUR BLOCK.</h2>
-            <p style={{ ...S.bd, maxWidth: 480 }}>Enter your name and email to get your personalized result — exactly why your applications are being ignored and the one thing that fixes it.</p>
-            <div style={{ display: "flex", flexDirection: "column", gap: 14, maxWidth: 420 }}>
+            <span style={C.label}>Audit Complete · Your Result Is Ready</span>
+            <h2 style={{ ...C.heading, fontSize: "clamp(44px, 8vw, 68px)", marginBottom: 24 }}>WE FOUND<br />YOUR BLOCK.</h2>
+            <p style={{ ...C.body, maxWidth: 480 }}>Enter your name and email to get your personalized result — exactly why your applications are being ignored and the one thing that fixes it.</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12, maxWidth: 420 }}>
               <input className="mm-input" type="text" placeholder="Your first name" value={firstName} onChange={e => setFirstName(e.target.value)} />
               <input className="mm-input" type="email" placeholder="Your email address" value={email} onChange={e => setEmail(e.target.value)} />
               <button className="btn-primary" onClick={submitEmail} disabled={!email || !firstName || submitting}>{submitting ? "One moment..." : "Show me what's blocking me →"}</button>
             </div>
-            <p style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: 1, color: "#bbb", marginTop: 16 }}>No spam. Just your result and your next step.</p>
+            <p style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: 1, color: "rgba(237,233,227,0.2)", marginTop: 16 }}>No spam. Just your result and your next step.</p>
           </div>
         )}
 
         {stage === "result" && result && scores && (
           <div className="fade-up">
-            <div style={{ borderBottom: "2px solid #0a0a0a", paddingBottom: 32, marginBottom: 40 }}>
-              <span style={S.ey}>{firstName ? `${firstName}'s` : "Your"} Application Killer Diagnosis</span>
-              <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(36px, 7vw, 64px)", lineHeight: 0.92, color: "#0a0a0a", letterSpacing: 1, marginBottom: 20 }}>{RESULTS[result].code}</div>
-              <p style={{ fontSize: 15, fontStyle: "italic", lineHeight: 1.65, color: "#333", paddingLeft: 20, borderLeft: "3px solid #0a0a0a", maxWidth: 520 }}>{RESULTS[result].tagline}</p>
+            <div style={{ borderBottom: "1px solid rgba(237,233,227,0.12)", paddingBottom: 32, marginBottom: 40 }}>
+              <span style={C.label}>{firstName ? `${firstName}'s` : "Your"} Application Killer Diagnosis</span>
+              <div style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(36px, 7vw, 64px)", lineHeight: 0.92, color: "#EDE9E3", letterSpacing: 1, marginBottom: 20 }}>{RESULTS[result].code}</div>
+              <p style={{ fontSize: 15, fontStyle: "italic", lineHeight: 1.7, color: "#A09C96", paddingLeft: 20, borderLeft: "2px solid #6B7280", maxWidth: 520 }}>{RESULTS[result].tagline}</p>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 2, background: "#0a0a0a", border: "1.5px solid #0a0a0a", marginBottom: 44 }}>
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 2, background: "rgba(237,233,227,0.08)", marginBottom: 44 }}>
               {Object.entries(scores).map(([key, val]) => {
                 const dom = result === key;
                 return (
-                  <div key={key} style={{ background: dom ? "#0a0a0a" : "#fff", padding: "18px 16px" }}>
-                    <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", color: "#888", display: "block", marginBottom: 6 }}>{dom ? "Your main block" : "Also a factor"}</span>
-                    <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 36, color: dom ? "#fff" : "#0a0a0a", display: "block", lineHeight: 1, marginBottom: 8 }}>{val}</span>
-                    <div style={{ height: 3, background: dom ? "#444" : "#ebebeb", marginBottom: 8 }}><div style={{ height: "100%", background: dom ? "#fff" : "#0a0a0a", width: `${(val / maxScore) * 100}%` }} /></div>
-                    <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, letterSpacing: 1.5, textTransform: "uppercase", color: dom ? "#fff" : "#0a0a0a", fontWeight: 500 }}>{KILLER_NAMES[key]}</span>
+                  <div key={key} style={{ background: dom ? "#EDE9E3" : "rgba(237,233,227,0.03)", padding: "18px 16px" }}>
+                    <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", color: dom ? "#6B7280" : "#6B7280", display: "block", marginBottom: 6 }}>{dom ? "Your main block" : "Also a factor"}</span>
+                    <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 36, color: dom ? "#0F0D0B" : "#EDE9E3", display: "block", lineHeight: 1, marginBottom: 8 }}>{val}</span>
+                    <div style={{ height: 2, background: "rgba(237,233,227,0.12)", marginBottom: 8 }}>
+                      <div style={{ height: "100%", background: dom ? "#0F0D0B" : "#EDE9E3", width: `${(val / maxScore) * 100}%` }} />
+                    </div>
+                    <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, letterSpacing: 1.5, textTransform: "uppercase", color: dom ? "#0F0D0B" : "#A09C96", fontWeight: 500 }}>{KILLER_NAMES[key]}</span>
                   </div>
                 );
               })}
             </div>
+
             {[["What This Actually Means", RESULTS[result].diagnosis], ["What It's Costing You", RESULTS[result].costs], ["Your One Fix", RESULTS[result].fix]].map(([label, text]) => (
-              <div key={label} style={{ marginBottom: 32, paddingBottom: 32, borderBottom: "1px solid #ebebeb" }}>
-                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: "#aaa", display: "block", marginBottom: 14 }}>{label}</span>
-                <p style={{ fontSize: 14.5, lineHeight: 1.85, color: "#222" }}>{text}</p>
+              <div key={label} style={{ marginBottom: 32, paddingBottom: 32, borderBottom: "1px solid rgba(237,233,227,0.08)" }}>
+                <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: "#6B7280", display: "block", marginBottom: 14 }}>{label}</span>
+                <p style={{ fontSize: 14.5, lineHeight: 1.85, color: "#A09C96" }}>{text}</p>
               </div>
             ))}
-            <div style={{ background: "#0a0a0a", padding: 32, marginBottom: 32 }}>
-              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: "#888", display: "block", marginBottom: 14 }}>Your Next Step</span>
-              <p style={{ fontSize: 14, lineHeight: 1.8, color: "#e8e8e8" }}>{RESULTS[result].next}</p>
+
+            <div style={{ background: "#EDE9E3", padding: 32, marginBottom: 32 }}>
+              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: "#6B7280", display: "block", marginBottom: 14 }}>Your Next Step</span>
+              <p style={{ fontSize: 14, lineHeight: 1.8, color: "#1A1714" }}>{RESULTS[result].next}</p>
             </div>
             <button className="btn-outline" onClick={onBack}>← Back to all tools</button>
           </div>
@@ -364,35 +530,49 @@ function Tool2({ onBack }) {
 
   return (
     <div style={{ maxWidth: 720, margin: "0 auto", padding: "56px 40px 80px" }} className="fade-up">
-      <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: "#aaa", display: "block", marginBottom: 20 }}>Guide · Beginners &amp; Career Shifters</span>
-      <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(44px, 8vw, 76px)", lineHeight: 0.92, color: "#0a0a0a", letterSpacing: 1, marginBottom: 28 }}>THE FIRST<br /><span style={{ WebkitTextStroke: "2px #0a0a0a", color: "transparent" }}>CLIENT</span><br />BLUEPRINT</h2>
-      <div style={{ width: 40, height: 3, background: "#0a0a0a", marginBottom: 28 }} />
-      <p style={{ fontSize: 14.5, lineHeight: 1.85, color: "#333", marginBottom: 40 }}>Three specific shifts that turn an invisible applicant into the VA that clients actually reply to. Each comes with an AI prompt you can use today — even with zero experience and zero clients right now.</p>
+      <span style={C.label}>Guide · Beginners &amp; Career Shifters</span>
+      <h2 style={{ ...C.heading, fontSize: "clamp(44px, 8vw, 76px)" }}>
+        THE FIRST<br />
+        <span style={{ WebkitTextStroke: "1.5px #EDE9E3", color: "transparent" }}>CLIENT</span><br />
+        BLUEPRINT
+      </h2>
+      <div style={C.rule} />
+      <p style={{ ...C.body }}>Three specific shifts that turn an invisible applicant into the VA that clients actually reply to. Each comes with an AI prompt you can use today — even with zero experience and zero clients right now.</p>
 
       <div style={{ display: "flex", gap: 2, marginBottom: 48, flexWrap: "wrap" }}>
         {BLUEPRINT_SECTIONS.map((s, i) => (
-          <button key={i} onClick={() => { setActive(i); setShowPrompt(null); }} style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", padding: "10px 18px", border: "1.5px solid #0a0a0a", cursor: "pointer", background: active === i ? "#0a0a0a" : "#fff", color: active === i ? "#fff" : "#0a0a0a", transition: "all 0.15s" }}>{s.number}</button>
+          <button key={i} onClick={() => { setActive(i); setShowPrompt(null); }} style={{
+            fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: 2, textTransform: "uppercase",
+            padding: "10px 18px",
+            border: `1px solid ${active === i ? "#EDE9E3" : "rgba(237,233,227,0.15)"}`,
+            cursor: "pointer",
+            background: active === i ? "#EDE9E3" : "transparent",
+            color: active === i ? "#0F0D0B" : "#A09C96",
+            transition: "all 0.15s",
+          }}>{s.number}</button>
         ))}
       </div>
 
       <div key={active} className="fade-up">
-        <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: "#aaa", display: "block", marginBottom: 8 }}>{sec.number}</span>
-        <h3 style={{ fontFamily: "'Libre Baskerville', serif", fontSize: "clamp(20px, 3.5vw, 28px)", fontWeight: 700, color: "#0a0a0a", marginBottom: 8 }}>{sec.title}</h3>
-        <p style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, letterSpacing: 1.5, textTransform: "uppercase", color: "#888", marginBottom: 24 }}>{sec.subtitle}</p>
-        <p style={{ fontSize: 14.5, lineHeight: 1.85, color: "#333", marginBottom: 32, paddingBottom: 32, borderBottom: "1px solid #ebebeb" }}>{sec.body}</p>
-        <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: "#aaa", display: "block", marginBottom: 10 }}>The Action</span>
-        <h4 style={{ fontFamily: "'Libre Baskerville', serif", fontSize: 17, fontWeight: 700, color: "#0a0a0a", marginBottom: 14 }}>{sec.action}</h4>
-        <p style={{ fontSize: 14, lineHeight: 1.8, color: "#333", marginBottom: 24 }}>{sec.action_desc}</p>
-        <button className="btn-outline" style={{ marginBottom: 4 }} onClick={() => setShowPrompt(showPrompt === active ? null : active)}>{showPrompt === active ? "Hide AI prompt ↑" : "View AI prompt →"}</button>
+        <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: "#6B7280", display: "block", marginBottom: 8 }}>{sec.number}</span>
+        <h3 style={{ fontFamily: "'Libre Baskerville', serif", fontSize: "clamp(20px, 3.5vw, 28px)", fontWeight: 700, color: "#EDE9E3", marginBottom: 8 }}>{sec.title}</h3>
+        <p style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, letterSpacing: 1.5, textTransform: "uppercase", color: "#6B7280", marginBottom: 24 }}>{sec.subtitle}</p>
+        <p style={{ fontSize: 14.5, lineHeight: 1.85, color: "#A09C96", marginBottom: 32, paddingBottom: 32, borderBottom: "1px solid rgba(237,233,227,0.08)" }}>{sec.body}</p>
+        <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: "#6B7280", display: "block", marginBottom: 10 }}>The Action</span>
+        <h4 style={{ fontFamily: "'Libre Baskerville', serif", fontSize: 17, fontWeight: 700, color: "#EDE9E3", marginBottom: 14 }}>{sec.action}</h4>
+        <p style={{ fontSize: 14, lineHeight: 1.8, color: "#A09C96", marginBottom: 24 }}>{sec.action_desc}</p>
+        <button className="btn-outline" style={{ marginBottom: 4 }} onClick={() => setShowPrompt(showPrompt === active ? null : active)}>
+          {showPrompt === active ? "Hide AI prompt ↑" : "View AI prompt →"}
+        </button>
         {showPrompt === active && (
-          <div style={{ background: "#f5f5f5", border: "1.5px solid #e0e0e0", padding: 24, marginTop: 20, marginBottom: 8 }} className="fade-up">
-            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", color: "#888", display: "block", marginBottom: 12 }}>Copy this prompt into ChatGPT or Claude</span>
-            <p style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, lineHeight: 1.9, color: "#333", whiteSpace: "pre-wrap" }}>{sec.ai_prompt}</p>
+          <div style={{ background: "rgba(237,233,227,0.04)", border: "1px solid rgba(237,233,227,0.12)", padding: 24, marginTop: 20, marginBottom: 8 }} className="fade-up">
+            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, letterSpacing: 2, textTransform: "uppercase", color: "#6B7280", display: "block", marginBottom: 12 }}>Copy this prompt into ChatGPT or Claude</span>
+            <p style={{ fontFamily: "'DM Mono', monospace", fontSize: 11, lineHeight: 1.9, color: "#A09C96", whiteSpace: "pre-wrap" }}>{sec.ai_prompt}</p>
           </div>
         )}
-        <div style={{ background: "#0a0a0a", padding: "16px 20px", marginTop: 24 }}>
-          <span style={{ fontSize: 16, color: "#fff" }}>— </span>
-          <span style={{ fontFamily: "'Libre Baskerville', serif", fontSize: 13, fontStyle: "italic", lineHeight: 1.7, color: "#e8e8e8" }}>{sec.highlight}</span>
+        <div style={{ background: "#EDE9E3", padding: "16px 20px", marginTop: 24 }}>
+          <span style={{ fontSize: 16, color: "#1A1714" }}>— </span>
+          <span style={{ fontFamily: "'Libre Baskerville', serif", fontSize: 13, fontStyle: "italic", lineHeight: 1.7, color: "#4A4A4A" }}>{sec.highlight}</span>
         </div>
         <div style={{ display: "flex", gap: 12, marginTop: 44, flexWrap: "wrap" }}>
           {active > 0 && <button className="btn-outline" onClick={() => { setActive(active - 1); setShowPrompt(null); }}>← Previous shift</button>}
@@ -422,20 +602,25 @@ function Tool3({ onBack }) {
 
   return (
     <div style={{ maxWidth: 720, margin: "0 auto", padding: "56px 40px 80px" }} className="fade-up">
-      <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: "#aaa", display: "block", marginBottom: 20 }}>Interactive Builder · Beginners &amp; Career Shifters</span>
-      <h2 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(40px, 7vw, 68px)", lineHeight: 0.92, color: "#0a0a0a", letterSpacing: 1, marginBottom: 28 }}>VA LAUNCH<br /><span style={{ WebkitTextStroke: "2px #0a0a0a", color: "transparent" }}>KIT BUILDER</span></h2>
-      <div style={{ width: 40, height: 3, background: "#0a0a0a", marginBottom: 28 }} />
-      <p style={{ fontSize: 14.5, lineHeight: 1.85, color: "#333", marginBottom: 20 }}>Build everything you need to land your first client — in one sitting. Check off each step as you complete it. Your launch kit builds as you go.</p>
+      <span style={C.label}>Interactive Builder · Beginners &amp; Career Shifters</span>
+      <h2 style={{ ...C.heading, fontSize: "clamp(40px, 7vw, 68px)" }}>
+        VA LAUNCH<br />
+        <span style={{ WebkitTextStroke: "1.5px #EDE9E3", color: "transparent" }}>KIT BUILDER</span>
+      </h2>
+      <div style={C.rule} />
+      <p style={C.body}>Build everything you need to land your first client — in one sitting. Check off each step as you complete it. Your launch kit builds as you go.</p>
 
-      <div style={{ background: "#f5f5f5", padding: "20px 24px", marginBottom: 44, display: "flex", alignItems: "center", gap: 20 }}>
+      <div style={{ background: "rgba(237,233,227,0.04)", border: "1px solid rgba(237,233,227,0.08)", padding: "20px 24px", marginBottom: 44, display: "flex", alignItems: "center", gap: 20 }}>
         <div style={{ flex: 1 }}>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", color: "#888" }}>Overall Progress</span>
-            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: 2, color: "#0a0a0a" }}>{totalDone}/{totalSteps} steps</span>
+            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: 2, textTransform: "uppercase", color: "#6B7280" }}>Overall Progress</span>
+            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: 2, color: "#EDE9E3" }}>{totalDone}/{totalSteps} steps</span>
           </div>
-          <div style={{ height: 4, background: "#e0e0e0" }}><div style={{ height: "100%", background: "#0a0a0a", width: `${overallPct}%`, transition: "width 0.4s ease" }} /></div>
+          <div style={{ height: 2, background: "rgba(237,233,227,0.08)" }}>
+            <div style={{ height: "100%", background: "#EDE9E3", width: `${overallPct}%`, transition: "width 0.4s ease" }} />
+          </div>
         </div>
-        <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 36, color: "#0a0a0a", lineHeight: 1 }}>{overallPct}%</span>
+        <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 40, color: "#EDE9E3", lineHeight: 1 }}>{overallPct}%</span>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 2, marginBottom: 44 }}>
@@ -443,35 +628,54 @@ function Tool3({ onBack }) {
           const pct = getPct(c);
           const isActive = active === i;
           return (
-            <button key={i} onClick={() => setActive(i)} style={{ padding: "16px 12px", border: "1.5px solid #0a0a0a", background: isActive ? "#0a0a0a" : "#fff", cursor: "pointer", textAlign: "left", transition: "all 0.15s" }}>
-              <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 28, color: isActive ? "#fff" : "#0a0a0a", display: "block", lineHeight: 1, marginBottom: 6 }}>{c.number}</span>
-              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, letterSpacing: 1.5, textTransform: "uppercase", color: "#888", display: "block", marginBottom: 8 }}>{pct}% done</span>
-              <div style={{ height: 2, background: isActive ? "#444" : "#ebebeb" }}><div style={{ height: "100%", background: isActive ? "#fff" : "#0a0a0a", width: `${pct}%`, transition: "width 0.3s" }} /></div>
+            <button key={i} onClick={() => setActive(i)} style={{
+              padding: "16px 12px",
+              border: `1px solid ${isActive ? "#EDE9E3" : "rgba(237,233,227,0.12)"}`,
+              background: isActive ? "#EDE9E3" : "rgba(237,233,227,0.02)",
+              cursor: "pointer", textAlign: "left", transition: "all 0.15s",
+            }}>
+              <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 28, color: isActive ? "#0F0D0B" : "#EDE9E3", display: "block", lineHeight: 1, marginBottom: 6 }}>{c.number}</span>
+              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 8, letterSpacing: 1.5, textTransform: "uppercase", color: "#6B7280", display: "block", marginBottom: 8 }}>{pct}% done</span>
+              <div style={{ height: 2, background: "rgba(237,233,227,0.08)" }}>
+                <div style={{ height: "100%", background: isActive ? "#0F0D0B" : "#EDE9E3", width: `${pct}%`, transition: "width 0.3s" }} />
+              </div>
             </button>
           );
         })}
       </div>
 
       <div key={active} className="fade-up">
-        <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: "#aaa", display: "block", marginBottom: 8 }}>Component {comp.number}</span>
-        <h3 style={{ fontFamily: "'Libre Baskerville', serif", fontSize: "clamp(18px, 3vw, 24px)", fontWeight: 700, color: "#0a0a0a", marginBottom: 16 }}>{comp.title}</h3>
-        <p style={{ fontSize: 14, lineHeight: 1.8, color: "#555", marginBottom: 36, paddingBottom: 36, borderBottom: "1px solid #ebebeb" }}>{comp.desc}</p>
-        <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: "#aaa", display: "block", marginBottom: 20 }}>Build Steps</span>
-        <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 40 }}>
+        <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: "#6B7280", display: "block", marginBottom: 8 }}>Component {comp.number}</span>
+        <h3 style={{ fontFamily: "'Libre Baskerville', serif", fontSize: "clamp(18px, 3vw, 24px)", fontWeight: 700, color: "#EDE9E3", marginBottom: 16 }}>{comp.title}</h3>
+        <p style={{ fontSize: 14, lineHeight: 1.8, color: "#A09C96", marginBottom: 36, paddingBottom: 36, borderBottom: "1px solid rgba(237,233,227,0.08)" }}>{comp.desc}</p>
+        <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: "#6B7280", display: "block", marginBottom: 20 }}>Build Steps</span>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 40 }}>
           {comp.steps.map((step, i) => {
             const done = !!checked[step.id];
             return (
-              <button key={step.id} onClick={() => toggle(step.id)} style={{ display: "flex", alignItems: "flex-start", gap: 16, padding: "18px 20px", border: `1.5px solid ${done ? "#0a0a0a" : "#e0e0e0"}`, background: done ? "#0a0a0a" : "#fff", cursor: "pointer", textAlign: "left", width: "100%", transition: "all 0.2s" }}>
-                <div style={{ flexShrink: 0, width: 22, height: 22, border: `1.5px solid ${done ? "#fff" : "#ccc"}`, background: done ? "#fff" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'DM Mono', monospace", fontSize: 10, color: done ? "#0a0a0a" : "#ccc", marginTop: 2 }}>{done ? "✓" : i + 1}</div>
-                <span style={{ fontFamily: "'Libre Baskerville', serif", fontSize: 13.5, lineHeight: 1.75, color: done ? "#aaa" : "#333", textDecoration: done ? "line-through" : "none" }}>{step.text}</span>
+              <button key={step.id} onClick={() => toggle(step.id)} style={{
+                display: "flex", alignItems: "flex-start", gap: 16, padding: "18px 20px",
+                border: `1px solid ${done ? "#EDE9E3" : "rgba(237,233,227,0.1)"}`,
+                background: done ? "#EDE9E3" : "rgba(237,233,227,0.02)",
+                cursor: "pointer", textAlign: "left", width: "100%", transition: "all 0.2s",
+              }}>
+                <div style={{
+                  flexShrink: 0, width: 22, height: 22,
+                  border: `1.5px solid ${done ? "#0F0D0B" : "rgba(237,233,227,0.2)"}`,
+                  background: done ? "#0F0D0B" : "transparent",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontFamily: "'DM Mono', monospace", fontSize: 10,
+                  color: done ? "#EDE9E3" : "rgba(237,233,227,0.3)", marginTop: 2,
+                }}>{done ? "✓" : i + 1}</div>
+                <span style={{ fontFamily: "'Libre Baskerville', serif", fontSize: 13.5, lineHeight: 1.75, color: done ? "#4A4A4A" : "#A09C96", textDecoration: done ? "line-through" : "none" }}>{step.text}</span>
               </button>
             );
           })}
         </div>
         {getPct(comp) === 100 && (
-          <div style={{ background: "#0a0a0a", padding: "24px 28px", marginBottom: 32 }} className="fade-up">
-            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: "#888", display: "block", marginBottom: 12 }}>Component Complete ✓</span>
-            <p style={{ fontSize: 13.5, lineHeight: 1.8, color: "#e8e8e8" }}>{comp.output}</p>
+          <div style={{ background: "#EDE9E3", padding: "24px 28px", marginBottom: 32 }} className="fade-up">
+            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: "#6B7280", display: "block", marginBottom: 12 }}>Component Complete ✓</span>
+            <p style={{ fontSize: 13.5, lineHeight: 1.8, color: "#1A1714" }}>{comp.output}</p>
           </div>
         )}
         <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
@@ -480,14 +684,14 @@ function Tool3({ onBack }) {
             ? <button className="btn-primary" onClick={() => setActive(active + 1)}>Next component →</button>
             : overallPct === 100
               ? (
-                <div style={{ background: "#0a0a0a", padding: "20px 28px", width: "100%" }} className="fade-up">
-                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: "#888", display: "block", marginBottom: 10 }}>Launch Kit Complete</span>
-                  <p style={{ fontSize: 14, lineHeight: 1.8, color: "#e8e8e8", marginBottom: 16 }}>Your VA Launch Kit is built. You have a pitch, a portfolio, a profile, and a daily outreach system. You are ready. Send your first five applications today. Systems Over Hustle™.</p>
-                  <p style={{ fontSize: 13, lineHeight: 1.8, color: "#666", marginBottom: 20 }}>Once you land your first client — come back for the Lean Trifecta. That's where you learn how to keep them.</p>
-                  <button className="btn-outline" onClick={onBack} style={{ background: "transparent", borderColor: "#fff", color: "#fff" }}>← Back to all tools</button>
+                <div style={{ background: "#EDE9E3", padding: "20px 28px", width: "100%" }} className="fade-up">
+                  <span style={{ fontFamily: "'DM Mono', monospace", fontSize: 9, letterSpacing: 3, textTransform: "uppercase", color: "#6B7280", display: "block", marginBottom: 10 }}>Launch Kit Complete</span>
+                  <p style={{ fontSize: 14, lineHeight: 1.8, color: "#1A1714", marginBottom: 16 }}>Your VA Launch Kit is built. You have a pitch, a portfolio, a profile, and a daily outreach system. You are ready. Send your first five applications today. Systems Over Hustle™.</p>
+                  <p style={{ fontSize: 13, lineHeight: 1.8, color: "#6B7280", marginBottom: 20 }}>Once you land your first client — come back for the Lean Trifecta. That's where you learn how to keep them.</p>
+                  <button className="btn-outline" onClick={onBack} style={{ borderColor: "rgba(26,23,20,0.3)", color: "#1A1714" }}>← Back to all tools</button>
                 </div>
               )
-              : <p style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, letterSpacing: 1.5, color: "#aaa", paddingTop: 16 }}>Complete all steps to finish your launch kit.</p>
+              : <p style={{ fontFamily: "'DM Mono', monospace", fontSize: 10, letterSpacing: 1.5, color: "#6B7280", paddingTop: 16 }}>Complete all steps to finish your launch kit.</p>
           }
         </div>
       </div>
@@ -506,8 +710,12 @@ export default function App() {
       <style>{GLOBAL_CSS}</style>
       <header className="hdr">
         <div className="hdr-left">
-          {view !== "hub" && <button className="back-btn" onClick={() => setView("hub")}>← All tools</button>}
-          <a href="https://systems.marginmomentum.co" className="brand" style={{textDecoration:"none"}}>Margin &amp; Momentum™</a>
+          {view !== "hub" && (
+            <button className="back-btn" onClick={() => setView("hub")}>← All tools</button>
+          )}
+          <a href="https://marginmomentum.co" className="brand" style={{ textDecoration: "none" }}>
+            Margin &amp; Momentum™
+          </a>
         </div>
         <div className="tag">Systems Over Hustle™</div>
       </header>
